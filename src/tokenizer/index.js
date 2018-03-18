@@ -240,11 +240,19 @@ export default class Tokenizer extends Component {
     let categoryType;
 
     if ( this.state.category === '' ) {
-      const categories = [];
+      // const categories = [];
+      const categories = new Set();
       for ( let i = 0; i < this.props.options.length; i++ ) {
-        categories.push( this.props.options[ i ].category );
+        // categories.push( this.props.options[ i ].category );
+        categories.add( this.props.options[ i ].category );
       }
-      return categories;
+
+      const defaultCat = new Set();
+      for ( let i = 0; i < this.state.selected.length; i++ ) {
+        defaultCat.add( this.state.selected[ i ].category );
+      }
+
+      return [ ...categories ].filter( x => !defaultCat.has( x ));
     } else if ( this.state.operator === '' ) {
       categoryType = this._getCategoryType();
 
