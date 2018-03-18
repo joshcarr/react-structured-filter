@@ -22,6 +22,11 @@ var ExampleTable = React.createClass({
               value: 'Dec 8, 1980 10:50 PM',
             },
           ],
+      header: {
+        first: "Category",
+        second: "Operator",
+        third: "Value"
+      },
     }
   },
 
@@ -81,6 +86,7 @@ var ExampleTable = React.createClass({
           }}
           onChange={this.updateFilter}
           value={this.state.filter}
+          header={this.state.header}
         />
         <GriddleWithCallback
           getExternalResults={this.getJsonData} filter={JSON.stringify(this.state.filter)}

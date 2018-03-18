@@ -182,3 +182,23 @@ Example:
 
 type: `array`  
 
+
+### `header`
+
+A mapping of headers to show
+
+if `header` is false, header won't show.
+if `header` is blank object, header won't show too.
+if `header` is equal above, header will show.
+
+Example:
+```javascript
+{
+  "first": "Category",
+  "second": "Operator",
+  "third": "Value"
+}
+```
+type: `object`
+defaultValue: `{}`
+

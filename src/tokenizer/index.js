@@ -167,6 +167,18 @@ export default class Tokenizer extends Component {
      * ```
      */
     operators: PropTypes.object,
+    /**
+     * A mapping of headers to show
+     * Example:
+     * ```javascript
+     * {
+     *    "first": "Category",
+     *    "second": "Operator",
+     *    "third": "Value"
+     * }
+     * ```
+     */
+    header: PropTypes.object,
   }
 
   static defaultProps = {
@@ -182,6 +194,7 @@ export default class Tokenizer extends Component {
       number: [ `==`, `!=`, `<`, `<=`, `>`, `>=` ],
       date: [ `==`, `!=`, `<`, `<=`, `>`, `>=` ],
     },
+    headers: {},
   }
 
   constructor( ...args ) {
@@ -268,12 +281,15 @@ export default class Tokenizer extends Component {
 
   _getHeader() {
     if ( this.state.category === '' ) {
-      return 'Category';
+      // return 'Category';
+      return this.props.header.first;
     } else if ( this.state.operator === '' ) {
-      return 'Operator';
+      // return 'Operator';
+      return this.props.header.second;
     }
 
-    return 'Value';
+    // return 'Value';
+    return this.props.header.third;
   }
 
   _getCategoryType( category ) {

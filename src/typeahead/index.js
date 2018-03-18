@@ -39,7 +39,7 @@ class Typeahead extends Component {
 
   static defaultProps = {
     options: [],
-    header: 'Category',
+    header: '',
     datatype: 'text',
     customClasses: {},
     defaultValue: '',
