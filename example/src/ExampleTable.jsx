@@ -23,9 +23,9 @@ var ExampleTable = React.createClass({
             },
           ],
       header: {
-        first: "Category",
-        second: "Operator",
-        third: "Value"
+        first: "Category1",
+        second: "Operator1",
+        third: "Value1"
       },
     }
   },

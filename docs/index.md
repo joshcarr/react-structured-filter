@@ -185,11 +185,12 @@ type: `array`
 
 ### `header`
 
-A mapping of headers to show
+Wether show header infomation. Defaults true. you can set it to false or object as argument
 
+if `header` is true, header will show. **Default**
 if `header` is false, header won't show.
 if `header` is blank object, header won't show too.
-if `header` is equal above, header will show.
+if `header` is equal to above like-code, header will show.
 
 Example:
 ```javascript
@@ -198,7 +199,8 @@ Example:
   "second": "Operator",
   "third": "Value"
 }
+
 ```
-type: `object`
-defaultValue: `{}`
+type: `object` or `bool`
+defaultValue: `true`
 

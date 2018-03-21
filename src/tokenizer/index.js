@@ -178,7 +178,10 @@ export default class Tokenizer extends Component {
      * }
      * ```
      */
-    header: PropTypes.object,
+    header: PropTypes.oneOfType([
+      PropTypes.object,
+      PropTypes.bool,
+    ]),
   }
 
   static defaultProps = {
@@ -194,7 +197,7 @@ export default class Tokenizer extends Component {
       number: [ `==`, `!=`, `<`, `<=`, `>`, `>=` ],
       date: [ `==`, `!=`, `<`, `<=`, `>`, `>=` ],
     },
-    headers: {},
+    header: true,
   }
 
   constructor( ...args ) {
@@ -203,12 +206,25 @@ export default class Tokenizer extends Component {
     this._onKeyDown = this._onKeyDown.bind( this );
     this._getOptionsForTypeahead = this._getOptionsForTypeahead.bind( this );
     this._removeTokenForValue = this._removeTokenForValue.bind( this );
-  }
 
-  state = {
-    selected: this.getStateFromProps( this.props ),
-    category: '',
-    operator: '',
+    let header = {
+      first: 'Category',
+      second: 'Operator',
+      third: 'Value',
+    };
+
+    if ( typeof this.props.header === 'boolean' ) {
+      header = this.props.header ? header : {};
+    } else if ( Object.prototype.toString.call( this.props.header ) === '[object Object]' ) {
+      header = this.props.header;
+    }
+
+    this.state = {
+      selected: this.getStateFromProps( this.props ),
+      category: '',
+      operator: '',
+      header,
+    };
   }
 
   componentDidMount() {
@@ -281,15 +297,12 @@ export default class Tokenizer extends Component {
 
   _getHeader() {
     if ( this.state.category === '' ) {
-      // return 'Category';
-      return this.props.header.first;
+      return this.state.header.first;
     } else if ( this.state.operator === '' ) {
-      // return 'Operator';
-      return this.props.header.second;
+      return this.state.header.second;
     }
 
-    // return 'Value';
-    return this.props.header.third;
+    return this.state.header.third;
   }
 
   _getCategoryType( category ) {
