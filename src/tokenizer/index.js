@@ -167,6 +167,11 @@ export default class Tokenizer extends Component {
      * ```
      */
     operators: PropTypes.object,
+    /**
+     * multiple selections for same category, defaults to true.
+     * if set to false, does not support multiple-selection.
+     */
+    multiSelection: PropTypes.bool,
   }
 
   static defaultProps = {
@@ -182,6 +187,7 @@ export default class Tokenizer extends Component {
       number: [ `==`, `!=`, `<`, `<=`, `>`, `>=` ],
       date: [ `==`, `!=`, `<`, `<=`, `>`, `>=` ],
     },
+    multiSelection: true,
   }
 
   constructor( ...args ) {
@@ -240,11 +246,18 @@ export default class Tokenizer extends Component {
     let categoryType;
 
     if ( this.state.category === '' ) {
-      const categories = [];
+      const categories = new Set();
       for ( let i = 0; i < this.props.options.length; i++ ) {
-        categories.push( this.props.options[ i ].category );
+        categories.add( this.props.options[ i ].category );
       }
-      return categories;
+
+      const defaultCat = new Set();
+      for ( let i = 0; i < this.state.selected.length; i++ ) {
+        defaultCat.add( this.state.selected[ i ].category );
+      }
+
+      return this.props.multiSelection ? [ ...categories ] :
+        [ ...categories ].filter( x => !defaultCat.has( x ));
     } else if ( this.state.operator === '' ) {
       categoryType = this._getCategoryType();
 
