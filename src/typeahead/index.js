@@ -282,7 +282,7 @@ class Typeahead extends Component {
             ref="datepicker"
             dateFormat={ "ll" }
             defaultValue={ defaultDate }
-            onBlur={ this._handleDateChange }
+            onChange={ this._handleDateChange }
             open={ this.state.focused }
           />
         </span>

@@ -1,6 +1,6 @@
 {
   "name": "react-structured-filter",
-  "version": "4.5.0",
+  "version": "4.5.2",
   "description": "React component that provides autocomplete faceted search queries",
   "main": "lib/main.js",
   "author": "Josh Carr",
