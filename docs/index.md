@@ -182,3 +182,10 @@ Example:
 
 type: `array`  
 
+
+### `multiSelection`
+
+Multiple selection for same category. Defaults true, mean that support multiple. otherwise, only one selection for same category.
+
+type: `bool`
+defaultValue: `true`
