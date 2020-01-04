@@ -14,7 +14,7 @@
     "fuzzy": "^0.1.0",
     "moment": "*",
     "react-datetime": "^2.1.0",
-    "react-onclickoutside": "^4.9.0",
+    "react-onclickoutside": "^6.7.1",
     "object-assign": "^3.0.0"
   },
   "devDependencies": {
