@@ -1,7 +1,4 @@
-import {
-  default as React,
-  Component,
-} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
@@ -27,6 +24,7 @@ export default class TypeaheadOption extends Component {
   constructor( ...args ) {
     super( ...args );
     this._onClick = this._onClick.bind( this );
+    this.anchor = React.createRef();
   }
 
   _getClasses() {
@@ -55,7 +53,7 @@ export default class TypeaheadOption extends Component {
           href="#"
           onClick={ this._onClick }
           className={ this._getClasses() }
-          ref="anchor"
+          ref={ this.anchor }
         >
           { this.props.children }
         </a>

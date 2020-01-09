@@ -1,8 +1,4 @@
-import {
-  default as React,
-  Component,
-} from 'react';
-import ReactDOM from 'react-dom';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Token from './token';
 import KeyEvent from '../keyevent';
@@ -190,6 +186,7 @@ export default class Tokenizer extends Component {
     this._onKeyDown = this._onKeyDown.bind( this );
     this._getOptionsForTypeahead = this._getOptionsForTypeahead.bind( this );
     this._removeTokenForValue = this._removeTokenForValue.bind( this );
+    this.typeahead = React.createRef();
   }
 
   state = {
@@ -307,7 +304,8 @@ export default class Tokenizer extends Component {
 
     // Remove token ONLY when bksp pressed at beginning of line
     // without a selection
-    const entry = ReactDOM.findDOMNode( this.refs.typeahead.refs.inner.inputRef());
+    const typeahead = this.typeahead.current.getInstance();
+    const entry = typeahead.inputRef();
     if ( entry.selectionStart === entry.selectionEnd &&
         entry.selectionStart === 0 ) {
       if ( this.state.operator !== '' ) {
@@ -327,7 +325,7 @@ export default class Tokenizer extends Component {
         );
         this.setState({ category: lastSelected.category, operator: lastSelected.operator });
         if ( this._getCategoryType( lastSelected.category ) !== 'textoptions' ) {
-          this.refs.typeahead.refs.inner.setEntryText( lastSelected.value );
+          typeahead.setEntryText( lastSelected.value );
         }
       }
       event.preventDefault();
@@ -350,13 +348,15 @@ export default class Tokenizer extends Component {
   _addTokenForValue( value ) {
     if ( this.state.category === '' ) {
       this.setState({ category: value });
-      this.refs.typeahead.refs.inner.setEntryText( '' );
+      const typeahead = this.typeahead.current.getInstance();
+      typeahead.setEntryText( '' );
       return;
     }
 
     if ( this.state.operator === '' ) {
       this.setState({ operator: value });
-      this.refs.typeahead.refs.inner.setEntryText( '' );
+      const typeahead = this.typeahead.current.getInstance();
+      typeahead.setEntryText( '' );
       return;
     }
 
@@ -368,7 +368,8 @@ export default class Tokenizer extends Component {
 
     this.state.selected.push( newValue );
     this.setState({ selected: this.state.selected });
-    this.refs.typeahead.refs.inner.setEntryText( '' );
+    const typeahead = this.typeahead.current.getInstance();
+    typeahead.setEntryText( '' );
     this.props.onChange( this.state.selected );
 
     this.setState({
@@ -403,7 +404,7 @@ export default class Tokenizer extends Component {
             <div className="filter-category">{ this.state.category } </div>
             <div className="filter-operator">{ this.state.operator } </div>
 
-            <Typeahead ref="typeahead"
+            <Typeahead ref={ this.typeahead }
               className={ classList }
               placeholder={ this.props.placeholder }
               customClasses={ this.props.customClasses }

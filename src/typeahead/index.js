@@ -1,17 +1,13 @@
 /* eslint eqeqeq: [2, "allow-null"] */
 
-import {
-  default as React,
-  Component,
-} from 'react';
-import ReactDOM from 'react-dom';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
 import fuzzy from 'fuzzy';
 import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
-import listensToClickOutside from 'react-onclickoutside/decorator';
+import onClickOutside from 'react-onclickoutside';
 
 import TypeaheadSelector from './selector';
 import KeyEvent from '../keyevent';
@@ -59,6 +55,11 @@ class Typeahead extends Component {
     this._onEscape = this._onEscape.bind( this );
     this._onTab = this._onTab.bind( this );
     // this._addTokenForValue = this._addTokenForValue.bind( this );
+
+    this.sel = React.createRef();
+    this.datepicker = React.createRef();
+    this.input = React.createRef();
+    this.entry = React.createRef();
   }
 
   state = {
@@ -100,8 +101,8 @@ class Typeahead extends Component {
   }
 
   setEntryText( value ) {
-    if ( this.refs.entry != null ) {
-      ReactDOM.findDOMNode( this.refs.entry ).value = value;
+    if ( this.entry.current != null ) {
+      this.entry.current.value = value;
     }
     this._onTextEntryUpdated();
   }
@@ -123,7 +124,7 @@ class Typeahead extends Component {
 
     return (
       <TypeaheadSelector
-        ref="sel"
+        ref={ this.sel }
         options={ this.state.visible }
         header={ this.state.header }
         onOptionSelected={ this._onOptionSelected }
@@ -133,7 +134,7 @@ class Typeahead extends Component {
   }
 
   _onOptionSelected( option ) {
-    const nEntry = ReactDOM.findDOMNode( this.refs.entry );
+    const nEntry = this.entry.current;
     nEntry.focus();
     nEntry.value = option;
     this.setState({
@@ -147,8 +148,9 @@ class Typeahead extends Component {
 
   _onTextEntryUpdated() {
     let value = '';
-    if ( this.refs.entry != null ) {
-      value = ReactDOM.findDOMNode( this.refs.entry ).value;
+    const entry = this.entry.current;
+    if ( entry != null ) {
+      value = entry.value;
     }
     this.setState({
       visible: this.getOptionsForValue( value, this.state.options ),
@@ -158,28 +160,33 @@ class Typeahead extends Component {
   }
 
   _onEnter( event ) {
-    if ( !this.refs.sel.state.selection ) {
+    const sel = this.sel.current;
+    if ( !sel.state.selection ) {
       return this.props.onKeyDown( event );
     }
 
-    this._onOptionSelected( this.refs.sel.state.selection );
+    this._onOptionSelected( sel.state.selection );
   }
 
   _onEscape() {
-    this.refs.sel.setSelectionIndex( null );
+    const sel = this.sel.current;
+    sel.setSelectionIndex( null );
   }
 
   _onTab() {
-    const option = this.refs.sel.state.selection ?
-      this.refs.sel.state.selection : this.state.visible[ 0 ];
+    const sel = this.sel.current;
+    const option = sel.state.selection ?
+      sel.state.selection : this.state.visible[ 0 ];
     this._onOptionSelected( option );
   }
 
   eventMap() {
     const events = {};
 
-    events[ KeyEvent.DOM_VK_UP ] = this.refs.sel.navUp;
-    events[ KeyEvent.DOM_VK_DOWN ] = this.refs.sel.navDown;
+    const sel = this.sel.current;
+
+    events[ KeyEvent.DOM_VK_UP ] = sel.navUp;
+    events[ KeyEvent.DOM_VK_DOWN ] = sel.navDown;
     events[ KeyEvent.DOM_VK_RETURN ] = events[ KeyEvent.DOM_VK_ENTER ] = this._onEnter;
     events[ KeyEvent.DOM_VK_ESCAPE ] = this._onEscape;
     events[ KeyEvent.DOM_VK_TAB ] = this._onTab;
@@ -203,7 +210,7 @@ class Typeahead extends Component {
 
     // If there are no visible elements, don't perform selector navigation.
     // Just pass this up to the upstream onKeydown handler
-    if ( !this.refs.sel ) {
+    if ( !this.sel ) {
       return this.props.onKeyDown( event );
     }
 
@@ -252,10 +259,12 @@ class Typeahead extends Component {
 
   inputRef() {
     if ( this._showDatePicker()) {
-      return this.refs.datepicker.refs.dateinput.refs.entry;
+      const datepicker = this.datepicker.current;
+      // TODO: FIXME: unable to test the code block below, someone please help
+      return datepicker.refs.dateinput.refs.entry;
     }
 
-    return this.refs.entry;
+    return this.entry.current;
   }
 
   render() {
@@ -274,12 +283,12 @@ class Typeahead extends Component {
       if ( !defaultDate.isValid()) defaultDate = moment();
       return (
         <span
-          ref="input"
+          ref={ this.input }
           className={ classList }
           onFocus={ this._onFocus }
         >
           <Datetime
-            ref="datepicker"
+            ref={ this.datepicker }
             dateFormat={ "ll" }
             defaultValue={ defaultDate }
             onChange={ this._handleDateChange }
@@ -291,12 +300,12 @@ class Typeahead extends Component {
 
     return (
       <span
-        ref="input"
+        ref={ this.input }
         className={ classList }
         onFocus={ this._onFocus }
       >
         <input
-          ref="entry"
+          ref={ this.entry }
           type="text"
           placeholder={ this.props.placeholder }
           className={ inputClassList }
@@ -310,4 +319,4 @@ class Typeahead extends Component {
   }
 }
 
-export default listensToClickOutside( Typeahead );
+export default onClickOutside( Typeahead );
