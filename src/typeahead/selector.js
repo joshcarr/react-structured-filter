@@ -115,9 +115,11 @@ export default class TypeaheadSelector extends Component {
       )
     , this );
 
+    const first = this.props.header ? ( <li className="header">{ this.props.header }</li> ) : null;
+
     return (
       <ul className={ classList }>
-        <li className="header">{ this.props.header }</li>
+        { first }
         { results }
       </ul>
     );
