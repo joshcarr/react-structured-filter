@@ -10,12 +10,12 @@
     "url": "https://github.com/joshcarr/react-structured-filter.git"
   },
   "dependencies": {
+    "antd": "^4.2.0",
     "classnames": "^2.2.3",
     "fuzzy": "^0.1.0",
     "moment": "*",
-    "react-datetime": "^2.16.2",
-    "react-onclickoutside": "^6.7.1",
-    "object-assign": "^3.0.0"
+    "object-assign": "^3.0.0",
+    "react-onclickoutside": "^6.7.1"
   },
   "devDependencies": {
     "babel-cli": "^6.7.5",

@@ -1,12 +1,13 @@
 /* eslint eqeqeq: [2, "allow-null"] */
 
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
 import fuzzy from 'fuzzy';
-import Datetime from 'react-datetime';
-import 'react-datetime/css/react-datetime.css';
+import DatePicker from 'antd/es/date-picker';
+// import 'antd/es/date-picker/style/css';
 import onClickOutside from 'react-onclickoutside';
 
 import TypeaheadSelector from './selector';
@@ -48,9 +49,12 @@ class Typeahead extends Component {
     super( ...args );
     this._onTextEntryUpdated = this._onTextEntryUpdated.bind( this );
     this._onKeyDown = this._onKeyDown.bind( this );
+    this._onDatePickerKeyDown = this._onDatePickerKeyDown.bind( this );
     this._onFocus = this._onFocus.bind( this );
     this._onOptionSelected = this._onOptionSelected.bind( this );
     this._handleDateChange = this._handleDateChange.bind( this );
+    this._getDatePickerInputRef = this._getDatePickerInputRef.bind( this );
+    this._renderDatePicker = this._renderDatePicker.bind( this );
     this._onEnter = this._onEnter.bind( this );
     this._onEscape = this._onEscape.bind( this );
     this._onTab = this._onTab.bind( this );
@@ -161,7 +165,7 @@ class Typeahead extends Component {
 
   _onEnter( event ) {
     const sel = this.sel.current;
-    if ( !sel.state.selection ) {
+    if ( !sel || !sel.state || !sel.state.selection ) {
       return this.props.onKeyDown( event );
     }
 
@@ -175,9 +179,9 @@ class Typeahead extends Component {
 
   _onTab() {
     const sel = this.sel.current;
-    const option = sel.state.selection ?
+    const option = ( !!sel && !!sel.state && !!sel.state.selection ) ?
       sel.state.selection : this.state.visible[ 0 ];
-    this._onOptionSelected( option );
+    this ._onOptionSelected( option );
   }
 
   eventMap() {
@@ -185,8 +189,10 @@ class Typeahead extends Component {
 
     const sel = this.sel.current;
 
-    events[ KeyEvent.DOM_VK_UP ] = sel.navUp;
-    events[ KeyEvent.DOM_VK_DOWN ] = sel.navDown;
+    if ( !!sel ) {
+      events[ KeyEvent.DOM_VK_UP ] = sel.navUp;
+      events[ KeyEvent.DOM_VK_DOWN ] = sel.navDown;
+    }
     events[ KeyEvent.DOM_VK_RETURN ] = events[ KeyEvent.DOM_VK_ENTER ] = this._onEnter;
     events[ KeyEvent.DOM_VK_ESCAPE ] = this._onEscape;
     events[ KeyEvent.DOM_VK_TAB ] = this._onTab;
@@ -257,17 +263,75 @@ class Typeahead extends Component {
     return false;
   }
 
+  _getDatePickerInputRef() {
+    if ( this._showDatePicker()) {
+      // Reference: https://davidwalsh.name/get-react-component-element
+      const datepickerNode = ReactDOM.findDOMNode( this );
+      const datepickerInputElement = datepickerNode.querySelector( 'div.ant-picker-input input' );
+      return datepickerInputElement;
+    }
+  }
+
   inputRef() {
     if ( this._showDatePicker()) {
-      const datepicker = this.datepicker.current;
-      // TODO: FIXME: unable to test the code block below, someone please help
-      return datepicker.refs.dateinput.refs.entry;
+      return this._getDatePickerInputRef();
     }
 
     return this.entry.current;
   }
 
+  _onDatePickerKeyDown( event ) {
+    // Don't propagate the keystroke back to the DOM/browser
+    // event.preventDefault();
+
+    return this.props.onKeyDown( event );
+  }
+
+  _renderDatePicker() {
+    const classes = {
+      typeahead: true,
+    };
+    classes[ this.props.className ] = !!this.props.className;
+    const classList = classNames( classes );
+
+    const datepickerInputRef = this._getDatePickerInputRef();
+    if ( !!datepickerInputRef ) {
+      datepickerInputRef.onkeydown = this._onDatePickerKeyDown;
+    }
+
+    let defaultDate = moment( this.state.entryValue, 'lll' );
+    if ( !defaultDate.isValid()) defaultDate = null;
+
+    return (
+      <span
+        ref={ this.input }
+        className={ classList }
+        onFocus={ this._onFocus }
+      >
+        <DatePicker
+          ref={ this.datepicker }
+          bordered={ false }
+          autoFocus
+          size={ "small" }
+          suffixIcon={ null }
+          placeholder={ this.props.placeholder }
+          style={ { border: 0 } }
+          showTime={ {
+            defaultValue: moment( '00:00:00', 'HH:mm:ss' ),
+          } }
+          defaultValue={ defaultDate }
+          onChange={ this._handleDateChange }
+          open
+        />
+      </span>
+    );
+  }
+
   render() {
+    if ( this._showDatePicker()) {
+      return this._renderDatePicker();
+    }
+
     const inputClasses = {};
     inputClasses[ this.props.customClasses.input ] = !!this.props.customClasses.input;
     const inputClassList = classNames( inputClasses );
@@ -277,26 +341,6 @@ class Typeahead extends Component {
     };
     classes[ this.props.className ] = !!this.props.className;
     const classList = classNames( classes );
-
-    if ( this._showDatePicker()) {
-      let defaultDate = moment( this.state.entryValue, 'lll' );
-      if ( !defaultDate.isValid()) defaultDate = moment();
-      return (
-        <span
-          ref={ this.input }
-          className={ classList }
-          onFocus={ this._onFocus }
-        >
-          <Datetime
-            ref={ this.datepicker }
-            dateFormat={ "ll" }
-            defaultValue={ defaultDate }
-            onChange={ this._handleDateChange }
-            open={ this.state.focused }
-          />
-        </span>
-      );
-    }
 
     return (
       <span

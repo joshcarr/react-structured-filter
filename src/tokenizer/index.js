@@ -353,9 +353,11 @@ export default class Tokenizer extends Component {
           this.state.selected[ this.state.selected.length - 1 ]
         );
         this.setState({ category: lastSelected.category, operator: lastSelected.operator });
-        if ( this._getCategoryType( lastSelected.category ) !== 'textoptions' ) {
-          typeahead.setEntryText( lastSelected.value );
-        }
+        // if ( this._getCategoryType( lastSelected.category ) !== 'textoptions' ) {
+        //   typeahead.setEntryText( lastSelected.value );
+        // }
+
+        // this.setState({ category: '', operator: '' });
       }
       event.preventDefault();
     }
@@ -443,8 +445,8 @@ export default class Tokenizer extends Component {
               onOptionSelected={ this._addTokenForValue }
               onKeyDown={ this._onKeyDown }
             />
-            </div>
           </div>
+        </div>
       </div>
     );
   }
